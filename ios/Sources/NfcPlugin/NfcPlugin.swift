@@ -710,7 +710,12 @@ extension NfcPlugin: NFCTagReaderSessionDelegate {
             }
 
             if let error {
-                session.invalidate(errorMessage: "Failed to connect to the tag: \(error.localizedDescription)")
+                if case .miFare(let mifareTag) = firstTag {
+                    self.emitTagEvent(tag: mifareTag, status: .notSupported,
+                                      capacity: 0, message: nil, session: session)
+                } else {
+                    session.invalidate(errorMessage: "Failed to connect to the tag: \(error.localizedDescription)")
+                }
                 return
             }
 
